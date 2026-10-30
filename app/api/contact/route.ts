@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import nodemailer from "nodemailer";
 import { z } from "zod";
+import { findDesign } from "@/lib/catalog";
+
+export const runtime = "nodejs";
 
 const contactSchema = z.object({
   name: z.string().trim().min(2).max(80),
@@ -10,6 +14,12 @@ const contactSchema = z.object({
   company: z.string().max(0).optional().default(""),
   locale: z.enum(["en", "sr"]).default("en"),
   startedAt: z.number(),
+  design: z.string().max(40).optional().default("").refine(value => !value || !!findDesign(value)),
+  brandName: z.string().trim().max(60).optional().default(""),
+  brandPrimary: z.union([z.literal(""), z.string().regex(/^#[0-9a-f]{6}$/i)]).optional().default(""),
+  brandSecondary: z.union([z.literal(""), z.string().regex(/^#[0-9a-f]{6}$/i)]).optional().default(""),
+  brandFont: z.union([z.literal(""), z.string().regex(/^#[0-9a-f]{6}$/i)]).optional().default(""),
+  website: z.union([z.literal(""), z.string().url().max(500).refine(value => /^https?:\/\//i.test(value))]).optional().default(""),
 });
 
 const recentRequests = new Map<string, number>();
@@ -29,26 +39,35 @@ export async function POST(request: NextRequest) {
   const address = request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for")?.split(",")[0] || "unknown";
   if (now - (recentRequests.get(address) ?? 0) < 30_000) return NextResponse.json({ error: "Please wait before sending another message." }, { status: 429 });
 
-  const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.CONTACT_TO_EMAIL;
-  const from = process.env.CONTACT_FROM_EMAIL;
-  if (!apiKey || !to || !from) {
+  const gmailAddress = process.env.GMAIL_ADDRESS;
+  const gmailAppPassword = process.env.GMAIL_APP_PASSWORD?.replace(/\s/g, "");
+  if (!gmailAddress || !gmailAppPassword) {
     console.error("Contact email environment variables are not configured.");
     return NextResponse.json({ error: "Email service is unavailable." }, { status: 503 });
   }
 
-  const { name, email, subject, projectType, message, locale } = parsed.data;
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      from, to: [to], reply_to: email, subject: `[Portfolio] ${subject}`,
-      text: `Name: ${name}\nEmail: ${email}\nProject type: ${projectType || "Not selected"}\nLanguage: ${locale}\n\n${message}`,
-      html: `<h2>New portfolio inquiry</h2><p><strong>Name:</strong> ${escapeHtml(name)}</p><p><strong>Email:</strong> ${escapeHtml(email)}</p><p><strong>Project type:</strong> ${escapeHtml(projectType || "Not selected")}</p><p><strong>Language:</strong> ${locale}</p><hr><p>${escapeHtml(message).replace(/\n/g, "<br>")}</p>`,
-    }),
-  });
-  if (!response.ok) {
-    console.error("Resend rejected contact email", response.status);
+  const { name, email, subject, projectType, message, locale, design, brandName, brandPrimary, brandSecondary, brandFont, website } = parsed.data;
+  const selectedDesign = findDesign(design)?.name ?? "Not selected";
+  try {
+    const transport = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: { user: gmailAddress, pass: gmailAppPassword },
+      connectionTimeout: 10_000,
+      greetingTimeout: 10_000,
+      socketTimeout: 15_000,
+    });
+    await transport.sendMail({
+      from: `SMDev sajt <${gmailAddress}>`,
+      to: gmailAddress,
+      replyTo: { name, address: email },
+      subject: `[SMDev] ${subject}`,
+      text: `Name: ${name}\nEmail: ${email}\nProject type: ${projectType || "Not selected"}\nDesign: ${selectedDesign}\nBusiness name in demo: ${brandName || "Not provided"}\nPrimary: ${brandPrimary || "Not selected"}\nSecondary: ${brandSecondary || "Not selected"}\nFont: ${brandFont || "Not selected"}\nExisting website: ${website || "Not provided"}\nLanguage: ${locale}\n\n${message}`,
+      html: `<h2>New SMDev inquiry</h2><p><strong>Name:</strong> ${escapeHtml(name)}</p><p><strong>Email:</strong> ${escapeHtml(email)}</p><p><strong>Project type:</strong> ${escapeHtml(projectType || "Not selected")}</p><p><strong>Design:</strong> ${escapeHtml(selectedDesign)}</p><p><strong>Business name in demo:</strong> ${escapeHtml(brandName || "Not provided")}</p><p><strong>Primary:</strong> ${escapeHtml(brandPrimary || "Not selected")}</p><p><strong>Secondary:</strong> ${escapeHtml(brandSecondary || "Not selected")}</p><p><strong>Font:</strong> ${escapeHtml(brandFont || "Not selected")}</p><p><strong>Existing website:</strong> ${escapeHtml(website || "Not provided")}</p><p><strong>Language:</strong> ${locale}</p><hr><p>${escapeHtml(message).replace(/\n/g, "<br>")}</p>`,
+    });
+  } catch (error) {
+    console.error("Gmail rejected contact email", error);
     return NextResponse.json({ error: "Email delivery failed." }, { status: 502 });
   }
   recentRequests.set(address, now);

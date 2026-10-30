@@ -3,11 +3,15 @@
 import { ArrowDownRight, ArrowUpRight, Check, Code2, Gauge, Globe2, LifeBuoy, Menu, Send, X } from "lucide-react";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { copy, type Locale } from "@/lib/content";
+import { contact, cvCopy, projects } from "@/lib/cv";
+import { findDesign } from "@/lib/catalog";
 
 const serviceIcons = [Globe2, Code2, Gauge, LifeBuoy];
 
 export function Portfolio({ locale }: { locale: Locale }) {
   const t = copy[locale];
+  const cv = cvCopy[locale];
+  const navigation = [...t.nav.slice(0, 2), [cv.nav, "work"], ...t.nav.slice(2)];
   const base = locale === "sr" ? "/sr" : "/";
   const alternate = locale === "sr" ? "/" : "/sr";
   const [menuOpen, setMenuOpen] = useState(false);
@@ -16,10 +20,33 @@ export function Portfolio({ locale }: { locale: Locale }) {
   const [activeExpertise, setActiveExpertise] = useState(0);
   const [formState, setFormState] = useState<"idle" | "sending" | "success" | "error">("idle");
   const formStartedAt = useRef(0);
+  const contactForm = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     document.documentElement.lang = locale === "sr" ? "sr-Latn" : "en";
     formStartedAt.current = Date.now();
+    const query = new URLSearchParams(window.location.search);
+    const selected = findDesign(query.get("design") ?? "");
+    const form = contactForm.current;
+    if (form) {
+      const field = (name: string) => form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement;
+      if (selected) {
+        field("design").value = selected.id;
+        field("designLabel").value = selected.name;
+        field("subject").value = `${locale === "sr" ? "Upit za dizajn" : "Design inquiry"}: ${selected.name}`;
+        field("projectType").value = locale === "sr" ? "Novi poslovni sajt" : "New business website";
+        const brandName = (query.get("business") ?? "").trim().slice(0, 60);
+        if (brandName) field("brandName").value = brandName;
+        for (const [queryKey, fieldName] of [["primary", "brandPrimary"], ["secondary", "brandSecondary"], ["font", "brandFont"]]) {
+          const value = query.get(queryKey) ?? (queryKey === "primary" ? query.get("color") : "") ?? "";
+          if (/^#[0-9a-f]{6}$/i.test(value)) field(fieldName).value = value;
+        }
+      }
+      if (query.get("project") === "redesign") {
+        field("projectType").value = locale === "sr" ? "Redizajn sajta" : "Website redesign";
+        field("subject").value = locale === "sr" ? "Unapređenje postojećeg sajta" : "Improve an existing website";
+      }
+    }
     const observer = new IntersectionObserver(
       (entries) => entries.forEach((entry) => entry.isIntersecting && entry.target.classList.add("is-visible")),
       { threshold: 0.12 },
@@ -52,9 +79,10 @@ export function Portfolio({ locale }: { locale: Locale }) {
     <>
       <a className="skip-link" href="#main">{t.skip}</a>
       <header className="site-header">
-        <a href={`${base}#home`} className="brand" aria-label="Siniša — home"><span>S</span><b>Siniša</b></a>
+        <a href={`${base}#home`} className="brand" aria-label="SMDev — home"><span>S</span><b>SMDev</b></a>
         <nav className="desktop-nav" aria-label="Primary navigation">
-          {t.nav.map(([label, id]) => <a key={id} href={`${base}#${id}`}>{label}</a>)}
+          <a href={locale === "sr" ? "/sr/katalog" : "/catalog"}>{locale === "sr" ? "Katalog" : "Catalog"}</a>
+          {navigation.map(([label, id]) => <a key={id} href={`${base}#${id}`}>{label}</a>)}
         </nav>
         <div className="header-actions">
           <a className="language-link" href={alternate} aria-label={t.languageLabel}>{t.language}</a>
@@ -62,7 +90,8 @@ export function Portfolio({ locale }: { locale: Locale }) {
           <button className="menu-button" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls="mobile-menu" aria-label="Toggle navigation">{menuOpen ? <X /> : <Menu />}</button>
         </div>
         <div id="mobile-menu" className={`mobile-nav ${menuOpen ? "open" : ""}`}>
-          {t.nav.map(([label, id], index) => <a key={id} href={`${base}#${id}`} onClick={() => setMenuOpen(false)}><span>0{index + 1}</span>{label}</a>)}
+          <a href={locale === "sr" ? "/sr/katalog" : "/catalog"}>{locale === "sr" ? "Katalog dizajna" : "Design catalog"}<ArrowUpRight/></a>
+          {navigation.map(([label, id], index) => <a key={id} href={`${base}#${id}`} onClick={() => setMenuOpen(false)}><span>0{index + 1}</span>{label}</a>)}
           <a className="mobile-project-link" href={`${base}#contact`} onClick={() => setMenuOpen(false)}>{t.start}<ArrowUpRight /></a>
         </div>
       </header>
@@ -77,6 +106,7 @@ export function Portfolio({ locale }: { locale: Locale }) {
               <a className="button button-primary" href="#contact">{t.primary}<ArrowDownRight /></a>
               <a className="text-link" href="#expertise">{t.secondary}<ArrowUpRight /></a>
             </div>
+            <a className="catalog-home-link" href={locale === "sr" ? "/sr/katalog" : "/catalog"}>{locale === "sr" ? "Nemate sajt? Pronađite izgled za svoj biznis →" : "Need a website? Find a design for your business →"}</a>
           </div>
           <div className="hero-signal reveal" aria-label={t.role}>
             <div className="signal-top"><span className="pulse-dot" />{t.availability}</div>
@@ -105,6 +135,16 @@ export function Portfolio({ locale }: { locale: Locale }) {
           </div>
         </section>
 
+        <section id="work" className="selected-work section-shell">
+          <SectionHeading kicker={cv.kicker} title={cv.title} intro={cv.intro} />
+          <div className="project-gallery">{projects.map((project, index) => <article className="project-entry reveal" key={project.id}>
+            <figure><img src={`/projects/${project.id}.svg`} alt={`${project.name} — ${locale === "sr" ? "ilustrativni koncept interfejsa" : "illustrative interface concept"}`} width={800} height={480} loading="lazy" /><figcaption>{cv.concept}</figcaption></figure>
+            <div className="project-meta"><span>{String(index + 1).padStart(2, "0")} / {project.category[locale === "sr" ? 1 : 0]}</span><span>{project.role}</span></div>
+            <h3>{project.name}</h3><p>{project[locale]}</p>
+            <ul className="project-stack">{project.tech.map(tech => <li key={tech}>{tech}</li>)}</ul>
+          </article>)}</div>
+        </section>
+
         <section className="process section-shell" aria-labelledby="process-title">
           <div className="process-heading reveal"><p className="eyebrow red">{t.workKicker}</p><h2 id="process-title">{t.workTitle}</h2><p>{t.workIntro}</p></div>
           <div className="process-board reveal">
@@ -127,17 +167,25 @@ export function Portfolio({ locale }: { locale: Locale }) {
 
         <section id="experience" className="experience section-shell dark-section">
           <SectionHeading kicker={t.expKicker} title={t.expTitle} intro={t.expIntro} />
-          <div className="timeline reveal">{t.experience.map(([number, title, description, tags]) => <article key={number}><span className="timeline-number">{number}</span><div><p>{tags}</p><h3>{title}</h3></div><p className="timeline-description">{description}</p><ArrowDownRight /></article>)}</div>
+          <div className="timeline reveal">{cv.jobs.map(([period, title, description], index) => <article key={period}><span className="timeline-number">0{index + 1}</span><div><p>{period}</p><h3>{title}</h3></div><p className="timeline-description">{description}</p><ArrowDownRight /></article>)}</div>
         </section>
 
         <section id="about" className="about section-shell">
           <div className="about-stamp reveal" aria-hidden="true"><div>S</div><span>FULLSTACK<br />WEB SOLUTIONS</span></div>
-          <div className="about-copy reveal"><p className="eyebrow red">{t.aboutKicker}</p><h2>{t.aboutTitle}</h2>{t.aboutBody.map((p) => <p key={p}>{p}</p>)}<ul>{t.principles.map((item) => <li key={item}><Check />{item}</li>)}</ul></div>
+          <div className="about-copy reveal"><p className="eyebrow red">{t.aboutKicker}</p><h2>{t.aboutTitle}</h2><p>{cv.profile}</p><p>{t.aboutBody[1]}</p><ul>{t.principles.map((item) => <li key={item}><Check />{item}</li>)}</ul></div>
         </section>
 
         <section id="contact" className="contact section-shell">
-          <div className="contact-intro reveal"><p className="eyebrow">{t.contactKicker}</p><h2>{t.contactTitle}</h2><p>{t.contactIntro}</p><div className="contact-orbit" aria-hidden="true"><span>@</span></div></div>
-          <form className="contact-form reveal" onSubmit={submitContact}>
+          <div className="contact-intro reveal"><p className="eyebrow">{t.contactKicker}</p><h2>{t.contactTitle}</h2><p>{t.contactIntro}</p><address className="direct-contact"><b>{cv.direct}</b><a href={`mailto:${contact.email}`}>{contact.email}<ArrowUpRight size={16} /></a><a href={`tel:${contact.phoneHref}`}>{contact.phone}</a><a href={contact.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn<ArrowUpRight size={16} /></a><span>{cv.location}</span></address></div>
+          <form className="contact-form reveal" onSubmit={submitContact} ref={contactForm}>
+            <input type="hidden" name="design" defaultValue=""/>
+            <label>{locale === "sr" ? "Izabrani dizajn (opciono)" : "Selected design (optional)"}<input name="designLabel" readOnly placeholder={locale === "sr" ? "Bez izabranog dizajna" : "No design selected"}/></label>
+            <label>{locale === "sr" ? "Naziv firme u demou (opciono)" : "Business name in demo (optional)"}<input name="brandName" readOnly maxLength={60} placeholder={locale === "sr" ? "Nije unet" : "Not entered"}/></label>
+            <div className="form-grid">
+              <label>{locale === "sr" ? "Primarna boja" : "Primary colour"}<input name="brandPrimary" readOnly maxLength={7} placeholder="—"/></label>
+              <label>{locale === "sr" ? "Sekundarna boja" : "Secondary colour"}<input name="brandSecondary" readOnly maxLength={7} placeholder="—"/></label>
+              <label>{locale === "sr" ? "Boja fonta" : "Font colour"}<input name="brandFont" readOnly maxLength={7} placeholder="—"/></label>
+            </div>
             <input type="text" name="company" className="honeypot" tabIndex={-1} autoComplete="off" aria-hidden="true" />
             <div className="form-grid">
               <label>{t.form.name}<input name="name" required minLength={2} maxLength={80} placeholder={t.form.placeholders[0]} autoComplete="name" /></label>
@@ -145,13 +193,14 @@ export function Portfolio({ locale }: { locale: Locale }) {
             </div>
             <label>{t.form.subject}<input name="subject" required minLength={3} maxLength={140} placeholder={t.form.placeholders[2]} /></label>
             <label>{t.form.type}<select name="projectType" defaultValue=""><option value="">{t.form.select}</option>{t.form.options.map((option) => <option key={option} value={option}>{option}</option>)}</select></label>
+            <label>{locale === "sr" ? "Postojeći sajt (opciono)" : "Existing website (optional)"}<input name="website" type="url" maxLength={500} placeholder="https://"/></label>
             <label>{t.form.message}<textarea name="message" required minLength={20} maxLength={4000} rows={6} placeholder={t.form.placeholders[3]} /></label>
             <div className="form-footer"><button className="button button-light" type="submit" disabled={formState === "sending"}>{formState === "sending" ? t.form.sending : t.form.send}<Send /></button><p className={`form-status ${formState}`} role="status">{formState === "success" ? t.form.success : formState === "error" ? t.form.error : ""}</p></div>
           </form>
         </section>
       </main>
 
-      <footer className="footer"><a href={`${base}#home`} className="brand light"><span>S</span><b>Siniša</b></a><p>{t.footer}</p><a href="#home">{t.back}<ArrowUpRight /></a></footer>
+      <footer className="footer"><a href={`${base}#home`} className="brand light"><span>S</span><b>SMDev</b></a><p>{t.footer}</p><a href="#home">{t.back}<ArrowUpRight /></a></footer>
     </>
   );
 }

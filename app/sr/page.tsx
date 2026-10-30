@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { Portfolio } from "@/components/portfolio";
 
 export const metadata: Metadata = {
-  title: "Siniša — Fullstack developer i partner za web rešenja",
+  title: "SMDev — Fullstack developer i partner za web rešenja",
   description:
-    "Brzi i pouzdani poslovni sajtovi, WordPress rešenja i web aplikacije zasnovane na fullstack iskustvu.",
+    "Brzi i pouzdani poslovni sajtovi i web aplikacije zasnovane na fullstack iskustvu.",
   alternates: { canonical: "/sr", languages: { en: "/", "sr-Latn": "/sr" } },
 };
 

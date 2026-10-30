@@ -6,14 +6,26 @@ Pročitaj [MASTER_PROMPT.md](MASTER_PROMPT.md): sadrži objedinjene zahteve, kas
 
 A bilingual portfolio for a fullstack developer and web solutions partner. The site presents business website and WordPress services, custom web applications, redesign and performance work, ongoing support, technical expertise, professional experience and an accessible project inquiry flow.
 
+## Objavljivanje na Vercelu i Gmail kontakt forma
+
+Produkcioni GitHub repozitorijum: `https://github.com/sinisa44/smdevelopment`. Vercel koristi `vercel.json`, koji bira Next.js i provereni `npm run build:vercel` build. Nije potreban Heroku niti poseban email servis.
+
+1. Na nalogu `smdev.development@gmail.com` uključi Google 2-Step Verification: [Google nalog → Security](https://myaccount.google.com/security). Zatim na [App Passwords](https://myaccount.google.com/apppasswords) napravi lozinku za aplikaciju, npr. „SMDev Vercel“. To nije obična Gmail lozinka. Ako opcija nije dostupna, Google objašnjava moguće razloge na [stranici za App Passwords](https://support.google.com/mail/answer/185833).
+2. U [Vercelu](https://vercel.com/new) izaberi **Add New → Project**, poveži GitHub i uvezi `sinisa44/smdevelopment`. Root Directory je koren repozitorijuma (`./`), Framework Preset **Next.js**. Ostavi podrazumevani Output Directory; `vercel.json` postavlja build komandu.
+3. U **Project → Settings → Environment Variables** dodaj `GMAIL_ADDRESS` = `smdev.development@gmail.com` i `GMAIL_APP_PASSWORD` = 16-znakova Google App Password (može bez razmaka). Obe promenljive uključi za **Production**, a za Preview samo ako želiš da i probne verzije šalju stvarne upite. Ne koristi prefiks `NEXT_PUBLIC_` i nikada ne dodaj App Password u Git.
+4. Pokreni **Deploy**. Ako su promenljive dodate tek posle prvog deploya, uradi **Redeploy** — postojeći deploy ne preuzima naknadno dodate promenljive.
+5. Na dobijenom `*.vercel.app` URL-u pošalji test-upit kroz **glavnu SMDev kontakt formu**. Proveri Gmail Inbox i Spam, pa klikni Reply: odgovor treba da ide na adresu posetioca. Demo forme u katalogu su namerno samo interaktivni primeri; ništa ne šalju i ne rezervišu.
+
+Forma šalje sa Gmail naloga na isti Gmail nalog preko `smtp.gmail.com:465` (TLS). Ako slanje ne uspe, proveri Vercel **Logs** za `/api/contact`, da li je App Password aktivan i da li su promenljive dostupne na aktivnom deployu. Obična Gmail lozinka neće raditi. Ako promeniš lozinku Google naloga, App Password može biti opozvan i moraćeš da napraviš novi i ponovo deployuješ.
+
 ## Local development
 
 ```bash
 npm install
-npm run dev
+npm run dev:vercel
 ```
 
-Copy `.env.example` to `.env.local` and provide a Resend API key plus verified sender and destination addresses to enable contact-form delivery. The API route validates all fields server-side, uses a honeypot and timing check, rate-limits repeat submissions, and includes the selected project type in both text and HTML email notifications.
+Copy `.env.example` to `.env.local` and put the Gmail App Password there only if you want to test sending locally. `.env.local` is ignored by Git. The API route validates fields server-side, uses a honeypot and timing check, and includes the selected design and colors in the email. In-memory rate limiting is only per running instance, not a global spam-control service.
 
 English is available at `/`; Serbian is available at `/sr`.
 
@@ -21,8 +33,8 @@ English is available at `/`; Serbian is available at `/sr`.
 
 - Next.js and TypeScript
 - Tailwind CSS 4 with a custom editorial design system
-- Vinext/Cloudflare deployment compatibility
-- Resend HTTP API integration
+- Vercel deployment via standard Next.js build (`npm run build:vercel`)
+- Gmail SMTP via Nodemailer for contact inquiries
 - Zod server-side validation
 
 ---
