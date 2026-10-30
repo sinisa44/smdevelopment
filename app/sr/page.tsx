@@ -1,13 +1,10 @@
-import type { Metadata } from "next";
-import { Portfolio } from "@/components/portfolio";
+import { permanentRedirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "SMDev — Fullstack developer i partner za web rešenja",
-  description:
-    "Brzi i pouzdani poslovni sajtovi i web aplikacije zasnovane na fullstack iskustvu.",
-  alternates: { canonical: "/sr", languages: { en: "/", "sr-Latn": "/sr" } },
-};
-
-export default function SerbianHome() {
-  return <Portfolio locale="sr" />;
+export default async function LegacySerbianHome({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(await searchParams)) {
+    if (Array.isArray(value)) value.forEach((item) => params.append(key, item));
+    else if (value !== undefined) params.set(key, value);
+  }
+  permanentRedirect(params.size ? `/?${params}` : "/");
 }

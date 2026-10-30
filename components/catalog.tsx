@@ -13,11 +13,11 @@ type Design = (typeof designs)[number];
 export function DesignCatalog({ locale }: { locale: Locale }) {
   const sr = locale === "sr";
   const [filter, setFilter] = useState("all");
-  const base = sr ? "/sr" : "/";
-  const catalog = sr ? "/sr/katalog" : "/catalog";
+  const base = sr ? "/" : "/en";
+  const catalog = sr ? "/katalog" : "/en/catalog";
   useEffect(() => { document.documentElement.lang = sr ? "sr-Latn" : "en"; }, [sr]);
   return <div className="catalog-page">
-    <header className="catalog-header"><a className="brand" href={base}><span>S</span><b>SMDev</b></a><a href={base}>{sr ? "Nazad na početnu" : "Back to home"}</a><a href={sr ? "/catalog" : "/sr/katalog"} lang={sr ? "en" : "sr-Latn"}>{sr ? "EN" : "SR"}</a></header>
+    <header className="catalog-header"><a className="brand" href={base}><span>S</span><b>SMDev</b></a><a href={base}>{sr ? "Nazad na početnu" : "Back to home"}</a><a href={sr ? "/en/catalog" : "/katalog"} lang={sr ? "en" : "sr-Latn"}>{sr ? "EN" : "SR"}</a></header>
     <main>
       <section className="catalog-intro"><p className="eyebrow">SMDev / {sr ? "Katalog dizajna" : "Design collection"}</p><h1>{sr ? "Kako bi vaš sajt" : "What could your"}<br/><em>{sr ? "mogao da izgleda?" : "website look like?"}</em></h1><div className="catalog-intro-bottom"><p>{sr ? "Pronađite pravac koji odgovara vašem biznisu. Zatim zajedno prilagođavamo sadržaj, boje i funkcionalnosti vašoj firmi." : "Find a direction that suits your business. Then we tailor the content, colours and functionality to your company."}</p><span>06 / {sr ? "različitih polaznih ideja" : "distinct starting points"}</span></div></section>
       <section className="catalog-collection" aria-label={sr ? "Dizajni sajtova" : "Website designs"}>
@@ -41,8 +41,8 @@ export function TemplatePreview({ design, locale }: { design: Design; locale: Lo
 
 export function DesignDemo({ design, locale }: { design: Design; locale: Locale }) {
   const sr = locale === "sr";
-  const base = sr ? "/sr" : "/";
-  const catalog = sr ? "/sr/katalog" : "/catalog";
+  const base = sr ? "/" : "/en";
+  const catalog = sr ? "/katalog" : "/en/catalog";
   useEffect(() => { document.documentElement.lang = sr ? "sr-Latn" : "en"; }, [sr]);
   return <div className="demo-page"><DemoPersonalization id={design.id} locale={locale}><div className="demo-toolbar"><a href={catalog}>← {sr ? "Svi dizajni" : "All designs"}</a><span>{sr ? "Demo sa izmišljenim sadržajem" : "Demo with fictional content"} · {design.name}</span><DemoCustomizeButton sr={sr}/><DemoToolbarLink fallback={`${base}?design=${design.id}#contact`} sr={sr}/></div><DemoSite id={design.id} locale={locale}/></DemoPersonalization></div>;
 }

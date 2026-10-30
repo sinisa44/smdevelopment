@@ -12,8 +12,8 @@ export function Portfolio({ locale }: { locale: Locale }) {
   const t = copy[locale];
   const cv = cvCopy[locale];
   const navigation = [...t.nav.slice(0, 2), [cv.nav, "work"], ...t.nav.slice(2)];
-  const base = locale === "sr" ? "/sr" : "/";
-  const alternate = locale === "sr" ? "/" : "/sr";
+  const base = locale === "sr" ? "/" : "/en";
+  const alternate = locale === "sr" ? "/en" : "/";
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeService, setActiveService] = useState(0);
   const [activeProcess, setActiveProcess] = useState(0);
@@ -81,7 +81,7 @@ export function Portfolio({ locale }: { locale: Locale }) {
       <header className="site-header">
         <a href={`${base}#home`} className="brand" aria-label="SMDev — home"><span>S</span><b>SMDev</b></a>
         <nav className="desktop-nav" aria-label="Primary navigation">
-          <a href={locale === "sr" ? "/sr/katalog" : "/catalog"}>{locale === "sr" ? "Katalog" : "Catalog"}</a>
+          <a href={locale === "sr" ? "/katalog" : "/en/catalog"}>{locale === "sr" ? "Katalog" : "Catalog"}</a>
           {navigation.map(([label, id]) => <a key={id} href={`${base}#${id}`}>{label}</a>)}
         </nav>
         <div className="header-actions">
@@ -90,7 +90,7 @@ export function Portfolio({ locale }: { locale: Locale }) {
           <button className="menu-button" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls="mobile-menu" aria-label="Toggle navigation">{menuOpen ? <X /> : <Menu />}</button>
         </div>
         <div id="mobile-menu" className={`mobile-nav ${menuOpen ? "open" : ""}`}>
-          <a href={locale === "sr" ? "/sr/katalog" : "/catalog"}>{locale === "sr" ? "Katalog dizajna" : "Design catalog"}<ArrowUpRight/></a>
+          <a href={locale === "sr" ? "/katalog" : "/en/catalog"}>{locale === "sr" ? "Katalog dizajna" : "Design catalog"}<ArrowUpRight/></a>
           {navigation.map(([label, id], index) => <a key={id} href={`${base}#${id}`} onClick={() => setMenuOpen(false)}><span>0{index + 1}</span>{label}</a>)}
           <a className="mobile-project-link" href={`${base}#contact`} onClick={() => setMenuOpen(false)}>{t.start}<ArrowUpRight /></a>
         </div>
@@ -106,7 +106,7 @@ export function Portfolio({ locale }: { locale: Locale }) {
               <a className="button button-primary" href="#contact">{t.primary}<ArrowDownRight /></a>
               <a className="text-link" href="#expertise">{t.secondary}<ArrowUpRight /></a>
             </div>
-            <a className="catalog-home-link" href={locale === "sr" ? "/sr/katalog" : "/catalog"}>{locale === "sr" ? "Nemate sajt? Pronađite izgled za svoj biznis →" : "Need a website? Find a design for your business →"}</a>
+            <a className="catalog-home-link" href={locale === "sr" ? "/katalog" : "/en/catalog"}>{locale === "sr" ? "Nemate sajt? Pronađite izgled za svoj biznis →" : "Need a website? Find a design for your business →"}</a>
           </div>
           <div className="hero-signal reveal" aria-label={t.role}>
             <div className="signal-top"><span className="pulse-dot" />{t.availability}</div>
