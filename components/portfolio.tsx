@@ -20,7 +20,7 @@ export function Portfolio({ locale }: { locale: Locale }) {
   const [activeProcess, setActiveProcess] = useState(0);
   const [activeExpertise, setActiveExpertise] = useState(0);
   const [formState, setFormState] = useState<"idle" | "sending" | "success" | "error">("idle");
-  const [selectedDesignId, setSelectedDesignId] = useState("");
+  const [demoSelection, setDemoSelection] = useState<{ id: string; name: string; business: string; primary: string; secondary: string; font: string } | null>(null);
   const [briefSummary, setBriefSummary] = useState<{ industry: string; needs: string; timeline: string; rawNeeds: string; rawTimeline: string } | null>(null);
   const formStartedAt = useRef(0);
   const contactForm = useRef<HTMLFormElement>(null);
@@ -34,16 +34,10 @@ export function Portfolio({ locale }: { locale: Locale }) {
     if (form) {
       const field = (name: string) => form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement;
       if (selected) {
-        setSelectedDesignId(selected.id);
-        field("designLabel").value = selected.name;
         field("subject").value = `${locale === "sr" ? "Upit za dizajn" : "Design inquiry"}: ${selected.name}`;
         field("projectType").value = locale === "sr" ? "Novi poslovni sajt" : "New business website";
-        const brandName = (query.get("business") ?? "").trim().slice(0, 60);
-        if (brandName) field("brandName").value = brandName;
-        for (const [queryKey, fieldName] of [["primary", "brandPrimary"], ["secondary", "brandSecondary"], ["font", "brandFont"]]) {
-          const value = query.get(queryKey) ?? (queryKey === "primary" ? query.get("color") : "") ?? "";
-          if (/^#[0-9a-f]{6}$/i.test(value)) field(fieldName).value = value;
-        }
+        const validColor = (value: string | null) => value && /^#[0-9a-f]{6}$/i.test(value) ? value : "";
+        setDemoSelection({ id: selected.id, name: selected.name, business: (query.get("business") ?? "").trim().slice(0, 60), primary: validColor(query.get("primary") ?? query.get("color")), secondary: validColor(query.get("secondary")), font: validColor(query.get("font")) });
       }
       if (query.get("project") === "redesign") {
         field("projectType").value = locale === "sr" ? "Redizajn sajta" : "Website redesign";
@@ -53,7 +47,7 @@ export function Portfolio({ locale }: { locale: Locale }) {
       const allowedNeeds = new Set<string>(briefNeeds.map(item => item.id));
       const needs = [...new Set((query.get("needs") ?? "").split(",").filter(item => allowedNeeds.has(item)))].slice(0, 6).join(",");
       const timeline = (query.get("timeline") ?? "").trim();
-      if (industry && needs && briefTimelines.some(item => item.id === timeline)) {
+      if (selected && industry && needs && briefTimelines.some(item => item.id === timeline)) {
         const needsLabel = briefNeedLabels(needs, locale);
         const timelineLabel = briefTimelineLabel(timeline, locale);
         setBriefSummary({ industry, needs: needsLabel, timeline: timelineLabel, rawNeeds: needs, rawTimeline: timeline });
@@ -85,7 +79,7 @@ export function Portfolio({ locale }: { locale: Locale }) {
       form.reset();
       formStartedAt.current = Date.now();
       setBriefSummary(null);
-      setSelectedDesignId("");
+      setDemoSelection(null);
       setFormState("success");
     } catch {
       setFormState("error");
@@ -195,18 +189,18 @@ export function Portfolio({ locale }: { locale: Locale }) {
         <section id="contact" className="contact section-shell">
           <div className="contact-intro reveal"><p className="eyebrow">{t.contactKicker}</p><h2>{t.contactTitle}</h2><p>{t.contactIntro}</p><address className="direct-contact"><b>{cv.direct}</b><a href={`mailto:${contact.email}`}>{contact.email}<ArrowUpRight size={16} /></a><a href={`tel:${contact.phoneHref}`}>{contact.phone}</a><a href={contact.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn<ArrowUpRight size={16} /></a><span>{cv.location}</span></address></div>
           <form className="contact-form reveal" onSubmit={submitContact} ref={contactForm}>
-            <input type="hidden" name="design" value={selectedDesignId} readOnly/>
+            <input type="hidden" name="design" value={demoSelection?.id ?? ""} readOnly/>
             <input type="hidden" name="briefIndustry" value={briefSummary?.industry ?? ""} readOnly/>
             <input type="hidden" name="briefNeeds" value={briefSummary?.rawNeeds ?? ""} readOnly/>
             <input type="hidden" name="briefTimeline" value={briefSummary?.rawTimeline ?? ""} readOnly/>
             {briefSummary && <div className="contact-brief-summary"><b>{locale === "sr" ? "Vaš kratki upitnik" : "Your short brief"}</b><p><strong>{locale === "sr" ? "Delatnost:" : "Industry:"}</strong> {briefSummary.industry}</p><p><strong>{locale === "sr" ? "Potrebno:" : "Needed:"}</strong> {briefSummary.needs}</p><p><strong>{locale === "sr" ? "Rok:" : "Timing:"}</strong> {briefSummary.timeline}</p><small>{locale === "sr" ? "Poruku ispod možete slobodno dopuniti pre slanja." : "You can add to the message below before sending."}</small></div>}
-            <label>{locale === "sr" ? "Izabrani dizajn (opciono)" : "Selected design (optional)"}<input name="designLabel" readOnly placeholder={locale === "sr" ? "Bez izabranog dizajna" : "No design selected"}/></label>
-            <label>{locale === "sr" ? "Naziv firme u demou (opciono)" : "Business name in demo (optional)"}<input name="brandName" readOnly maxLength={60} placeholder={locale === "sr" ? "Nije unet" : "Not entered"}/></label>
-            <div className="form-grid">
-              <label>{locale === "sr" ? "Primarna boja" : "Primary colour"}<input name="brandPrimary" readOnly maxLength={7} placeholder="—"/></label>
-              <label>{locale === "sr" ? "Sekundarna boja" : "Secondary colour"}<input name="brandSecondary" readOnly maxLength={7} placeholder="—"/></label>
-              <label>{locale === "sr" ? "Boja fonta" : "Font colour"}<input name="brandFont" readOnly maxLength={7} placeholder="—"/></label>
-            </div>
+            {demoSelection && <label>{locale === "sr" ? "Izabrani dizajn" : "Selected design"}<input name="designLabel" readOnly value={demoSelection.name}/></label>}
+            {demoSelection?.business && <label>{locale === "sr" ? "Naziv firme u demou" : "Business name in demo"}<input name="brandName" readOnly maxLength={60} value={demoSelection.business}/></label>}
+            {demoSelection && (demoSelection.primary || demoSelection.secondary || demoSelection.font) && <div className="form-grid">
+              {demoSelection.primary && <label>{locale === "sr" ? "Primarna boja" : "Primary colour"}<input name="brandPrimary" readOnly maxLength={7} value={demoSelection.primary}/></label>}
+              {demoSelection.secondary && <label>{locale === "sr" ? "Sekundarna boja" : "Secondary colour"}<input name="brandSecondary" readOnly maxLength={7} value={demoSelection.secondary}/></label>}
+              {demoSelection.font && <label>{locale === "sr" ? "Boja fonta" : "Font colour"}<input name="brandFont" readOnly maxLength={7} value={demoSelection.font}/></label>}
+            </div>}
             <input type="text" name="company" className="honeypot" tabIndex={-1} autoComplete="off" aria-hidden="true" />
             <div className="form-grid">
               <label>{t.form.name}<input name="name" required minLength={2} maxLength={80} placeholder={t.form.placeholders[0]} autoComplete="name" /></label>
