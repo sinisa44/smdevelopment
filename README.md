@@ -1,4 +1,8 @@
-# Siniša — Portfolio
+# SMDev — Portfolio
+
+## Nastavak rada na drugom računaru
+
+Pročitaj [MASTER_PROMPT.md](MASTER_PROMPT.md): sadrži objedinjene zahteve, kasnije odluke, podatke iz CV-ja, mapu projekta i uputstvo za prenos. Novom AI asistentu napiši: „Pročitaj MASTER_PROMPT.md i README.md i nastavi rad na postojećem projektu.”
 
 A bilingual portfolio for a fullstack developer and web solutions partner. The site presents business website and WordPress services, custom web applications, redesign and performance work, ongoing support, technical expertise, professional experience and an accessible project inquiry flow.
 
