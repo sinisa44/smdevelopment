@@ -27,7 +27,7 @@ export function DesignCatalog({ locale }: { locale: Locale }) {
         <p className="catalog-note">{sr ? "Demonstracioni primeri sa izmišljenim sadržajem. Svaki dizajn se prilagođava vašem poslovanju." : "Demonstration designs with fictional content. Every design is adapted to your business."}</p>
         <div className="catalog-grid">{orderedDesigns.filter(design => filter === "all" || filter === design.category).map(design => <article className="catalog-card" key={design.id}>
           <a className="catalog-preview-link" href={`${catalog}/${design.id}`} aria-label={`${sr ? "Pogledaj demo" : "View demo"}: ${design.name}`}><TemplatePreview design={design} locale={locale}/><span className="preview-open">{sr ? "Otvori primer" : "Open demo"} ↗</span></a>
-          <div className="catalog-card-title"><h2>{design.name}</h2><span>{sr ? design.sr : design.en}</span></div><p>{design.desc[sr ? 1 : 0]}</p><ul className="catalog-pages">{design.pages[sr ? 1 : 0].map(page => <li key={page}>{page}</li>)}</ul><div className="catalog-card-actions"><a href={`${catalog}/${design.id}`}>{sr ? "Pogledaj demo" : "View demo"}<ArrowUpRight size={17}/></a><a href={`${base}?design=${design.id}#contact`}>{sr ? "Želim ovakav sajt" : "I want this design"}<ArrowUpRight size={17}/></a></div>
+          <div className="catalog-card-title"><h2>{design.name}</h2><span>{sr ? design.sr : design.en}</span></div><p>{design.desc[sr ? 1 : 0]}</p><ul className="catalog-pages">{design.pages[sr ? 1 : 0].map(page => <li key={page}>{page}</li>)}</ul><div className="catalog-card-actions"><a href={`${catalog}/${design.id}`}>{sr ? "Pogledaj demo" : "View demo"}<ArrowUpRight size={17}/></a><a href={`${sr ? "/upitnik" : "/en/brief"}?design=${design.id}`}>{sr ? "Želim ovakav sajt" : "I want this design"}<ArrowUpRight size={17}/></a></div>
         </article>)}</div>
       </section>
       <section className="catalog-redesign"><p className="eyebrow">{sr ? "Već imate sajt?" : "Already have a website?"}</p><h2>{sr ? "Možda mu treba novi početak." : "It might be time for a fresh start."}</h2><p>{sr ? "Pošaljite adresu postojećeg sajta i recite šta vam smeta. Razgovaraćemo o tome šta vredi zadržati i šta treba unaprediti." : "Share your existing website and what is getting in the way. We can discuss what to keep and what to improve."}</p><a className="button button-primary" href={`${base}?project=redesign#contact`}>{sr ? "Želim da unapredim svoj sajt" : "Improve my existing website"}<ArrowUpRight/></a></section>
@@ -44,10 +44,9 @@ export function TemplatePreview({ design, locale }: { design: Design; locale: Lo
 
 export function DesignDemo({ design, locale }: { design: Design; locale: Locale }) {
   const sr = locale === "sr";
-  const base = sr ? "/" : "/en";
   const catalog = sr ? "/katalog" : "/en/catalog";
   useEffect(() => { document.documentElement.lang = sr ? "sr-Latn" : "en"; }, [sr]);
-  return <div className="demo-page"><DemoPersonalization id={design.id} locale={locale}><div className="demo-toolbar"><a href={catalog}>← {sr ? "Svi dizajni" : "All designs"}</a><span>{sr ? "Demo sa izmišljenim sadržajem" : "Demo with fictional content"} · {design.name}</span><DemoCustomizeButton sr={sr}/><DemoToolbarLink fallback={`${base}?design=${design.id}#contact`} sr={sr}/></div><DemoSite id={design.id} locale={locale}/></DemoPersonalization></div>;
+  return <div className="demo-page"><DemoPersonalization id={design.id} locale={locale}><div className="demo-toolbar"><a href={catalog}>← {sr ? "Svi dizajni" : "All designs"}</a><span>{sr ? "Demo sa izmišljenim sadržajem" : "Demo with fictional content"} · {design.name}</span><DemoCustomizeButton sr={sr}/><DemoToolbarLink fallback={`${sr ? "/upitnik" : "/en/brief"}?design=${design.id}`} sr={sr}/></div><DemoSite id={design.id} locale={locale}/></DemoPersonalization></div>;
 }
 
 function DemoCustomizeButton({ sr }: { sr: boolean }) {

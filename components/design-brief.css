@@ -1,0 +1,26 @@
+.brief-page{min-height:100vh;background:var(--paper);color:var(--ink)}
+.brief-header{display:flex;align-items:center;gap:28px;padding:22px 6vw;border-bottom:1px solid var(--line)}
+.brief-header .brand{margin-right:auto}.brief-header>a:not(.brand){font-size:12px;font-weight:700}
+.brief-main{display:grid;grid-template-columns:.92fr 1.08fr;gap:8%;padding:80px 6vw 110px;align-items:start}
+.brief-intro h1{font-size:clamp(48px,6.5vw,92px);line-height:1;letter-spacing:-.065em;margin:20px 0 32px}
+.brief-intro h1 em{font-family:Georgia,serif;color:var(--signal);font-weight:400}
+.brief-intro>p:not(.eyebrow){font-size:17px;line-height:1.65;max-width:540px}
+.brief-selected{margin-top:55px;padding:23px 25px;border:1px solid var(--ink);display:grid;grid-template-columns:1fr auto;gap:6px 18px;max-width:470px}
+.brief-selected small{grid-column:1/-1;font:700 10px monospace;letter-spacing:.1em}.brief-selected strong{font-size:30px;letter-spacing:-.04em}.brief-selected span{grid-column:1;font-size:12px}.brief-selected a{grid-column:2;grid-row:2/4;align-self:center;font-size:11px;font-weight:800;border-bottom:1px solid}
+.brief-form{background:#fff;padding:clamp(25px,4vw,55px);box-shadow:14px 14px 0 var(--ink)}
+.brief-question{border:0;border-top:1px solid var(--line);padding:25px 0 30px;margin:0;min-width:0}
+.brief-question>span,.brief-question legend>span{display:block;font:700 10px monospace;letter-spacing:.1em;color:var(--signal);margin-bottom:14px}
+.brief-question>label,.brief-question legend{display:block;font-size:22px;font-weight:800;letter-spacing:-.035em;line-height:1.2}
+.brief-question legend{width:100%;padding:25px 0 0;margin-top:-25px}
+.brief-question>p{font-size:12px;margin:10px 0 18px}
+.brief-question>input,.brief-question>select{display:block;width:100%;margin-top:16px;border:1px solid var(--line);border-radius:0;background:#fff;color:var(--ink);padding:16px;font-size:15px}
+.brief-question :is(input,select,button):focus-visible,.brief-actions button:focus-visible{outline:3px solid var(--signal);outline-offset:3px}
+.brief-options{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.brief-options label{display:flex;align-items:center;gap:9px;padding:13px;border:1px solid var(--line);font-size:12px;font-weight:700;cursor:pointer;line-height:1.35}
+.brief-options label.is-selected{border-color:var(--ink);background:var(--acid)}
+.brief-options input{accent-color:var(--ink);width:16px;height:16px;flex:none}
+.brief-error{color:#a71b18;font-size:13px;font-weight:700}
+.brief-actions{padding-top:20px}.brief-actions button{display:flex;align-items:center;justify-content:space-between;gap:35px;border:0;background:var(--ink);color:#fff;padding:18px 23px;font-size:14px;font-weight:800;cursor:pointer}
+.brief-actions>p{font-size:11px;line-height:1.5;max-width:380px;margin:17px 0 0;color:#5c615c}
+@media(max-width:950px){.brief-main{grid-template-columns:1fr;gap:45px}.brief-intro h1{max-width:800px}.brief-selected{margin-top:30px}}
+@media(max-width:600px){.brief-header{padding:17px 6vw;gap:18px}.brief-main{padding:55px 6vw 80px}.brief-intro h1{font-size:clamp(45px,12vw,65px)}.brief-form{padding:25px 18px;box-shadow:7px 7px 0 var(--ink)}.brief-options{grid-template-columns:1fr}.brief-question>label,.brief-question legend{font-size:20px}}

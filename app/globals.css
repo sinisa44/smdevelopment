@@ -159,6 +159,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .contact-orbit::after { content: ""; position: absolute; width: 26px; height: 26px; background: var(--acid); border-radius: 50%; top: 4px; right: 12px; }
 .contact-orbit span { font: italic 64px Georgia, serif; }
 .contact-form { background: var(--paper); color: var(--ink); padding: clamp(28px, 5vw, 70px); align-self: start; box-shadow: 18px 18px 0 var(--ink); }
+.contact-brief-summary{border:1px solid var(--ink);padding:18px 20px;margin-bottom:30px;background:color-mix(in srgb,var(--acid) 35%,var(--paper));font-size:13px;line-height:1.5}
+.contact-brief-summary>b{display:block;font-size:16px;margin-bottom:10px}.contact-brief-summary p{margin:5px 0}.contact-brief-summary small{display:block;margin-top:12px}
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 .contact-form label { display: block; margin-bottom: 26px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .1em; }
 .contact-form input, .contact-form select, .contact-form textarea { width: 100%; display: block; margin-top: 9px; border: 0; border-bottom: 1px solid var(--ink); border-radius: 0; background: transparent; padding: 13px 0; color: var(--ink); font-size: 16px; text-transform: none; letter-spacing: normal; outline: 0; }

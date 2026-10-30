@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { z } from "zod";
 import { findDesign } from "@/lib/catalog";
+import { briefNeeds, briefTimelines, briefNeedLabels, briefTimelineLabel } from "@/lib/brief";
 
 export const runtime = "nodejs";
 
@@ -20,6 +21,9 @@ const contactSchema = z.object({
   brandSecondary: z.union([z.literal(""), z.string().regex(/^#[0-9a-f]{6}$/i)]).optional().default(""),
   brandFont: z.union([z.literal(""), z.string().regex(/^#[0-9a-f]{6}$/i)]).optional().default(""),
   website: z.union([z.literal(""), z.string().url().max(500).refine(value => /^https?:\/\//i.test(value))]).optional().default(""),
+  briefIndustry: z.string().trim().max(80).optional().default(""),
+  briefNeeds: z.string().max(80).optional().default("").refine(value => !value || value.split(",").every(id => briefNeeds.some(item => item.id === id))),
+  briefTimeline: z.string().max(20).optional().default("").refine(value => !value || briefTimelines.some(item => item.id === value)),
 });
 
 const recentRequests = new Map<string, number>();
@@ -46,8 +50,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Email service is unavailable." }, { status: 503 });
   }
 
-  const { name, email, subject, projectType, message, locale, design, brandName, brandPrimary, brandSecondary, brandFont, website } = parsed.data;
+  const { name, email, subject, projectType, message, locale, design, brandName, brandPrimary, brandSecondary, brandFont, website, briefIndustry, briefNeeds: selectedNeeds, briefTimeline } = parsed.data;
   const selectedDesign = findDesign(design)?.name ?? "Not selected";
+  const needsLabel = briefNeedLabels(selectedNeeds, locale);
+  const timelineLabel = briefTimelineLabel(briefTimeline, locale);
   try {
     const transport = nodemailer.createTransport({
       host: "smtp.gmail.com",
@@ -63,8 +69,8 @@ export async function POST(request: NextRequest) {
       to: gmailAddress,
       replyTo: { name, address: email },
       subject: `[SMDev] ${subject}`,
-      text: `Name: ${name}\nEmail: ${email}\nProject type: ${projectType || "Not selected"}\nDesign: ${selectedDesign}\nBusiness name in demo: ${brandName || "Not provided"}\nPrimary: ${brandPrimary || "Not selected"}\nSecondary: ${brandSecondary || "Not selected"}\nFont: ${brandFont || "Not selected"}\nExisting website: ${website || "Not provided"}\nLanguage: ${locale}\n\n${message}`,
-      html: `<h2>New SMDev inquiry</h2><p><strong>Name:</strong> ${escapeHtml(name)}</p><p><strong>Email:</strong> ${escapeHtml(email)}</p><p><strong>Project type:</strong> ${escapeHtml(projectType || "Not selected")}</p><p><strong>Design:</strong> ${escapeHtml(selectedDesign)}</p><p><strong>Business name in demo:</strong> ${escapeHtml(brandName || "Not provided")}</p><p><strong>Primary:</strong> ${escapeHtml(brandPrimary || "Not selected")}</p><p><strong>Secondary:</strong> ${escapeHtml(brandSecondary || "Not selected")}</p><p><strong>Font:</strong> ${escapeHtml(brandFont || "Not selected")}</p><p><strong>Existing website:</strong> ${escapeHtml(website || "Not provided")}</p><p><strong>Language:</strong> ${locale}</p><hr><p>${escapeHtml(message).replace(/\n/g, "<br>")}</p>`,
+      text: `Name: ${name}\nEmail: ${email}\nProject type: ${projectType || "Not selected"}\nDesign: ${selectedDesign}\nBusiness name in demo: ${brandName || "Not provided"}\nPrimary: ${brandPrimary || "Not selected"}\nSecondary: ${brandSecondary || "Not selected"}\nFont: ${brandFont || "Not selected"}\nExisting website: ${website || "Not provided"}\nIndustry: ${briefIndustry || "Not provided"}\nWebsite needs: ${needsLabel || "Not provided"}\nTiming: ${timelineLabel || "Not provided"}\nLanguage: ${locale}\n\n${message}`,
+      html: `<h2>New SMDev inquiry</h2><p><strong>Name:</strong> ${escapeHtml(name)}</p><p><strong>Email:</strong> ${escapeHtml(email)}</p><p><strong>Project type:</strong> ${escapeHtml(projectType || "Not selected")}</p><p><strong>Design:</strong> ${escapeHtml(selectedDesign)}</p><p><strong>Business name in demo:</strong> ${escapeHtml(brandName || "Not provided")}</p><p><strong>Primary:</strong> ${escapeHtml(brandPrimary || "Not selected")}</p><p><strong>Secondary:</strong> ${escapeHtml(brandSecondary || "Not selected")}</p><p><strong>Font:</strong> ${escapeHtml(brandFont || "Not selected")}</p><p><strong>Existing website:</strong> ${escapeHtml(website || "Not provided")}</p><p><strong>Industry:</strong> ${escapeHtml(briefIndustry || "Not provided")}</p><p><strong>Website needs:</strong> ${escapeHtml(needsLabel || "Not provided")}</p><p><strong>Timing:</strong> ${escapeHtml(timelineLabel || "Not provided")}</p><p><strong>Language:</strong> ${locale}</p><hr><p>${escapeHtml(message).replace(/\n/g, "<br>")}</p>`,
     });
   } catch (error) {
     console.error("Gmail rejected contact email", error);

@@ -52,7 +52,7 @@ export function ExpansionDemo({ id, locale }: { id: string; locale: Locale }) {
   if (!design || !entry) return null;
   const title = picked?.businessName || design.name;
   const services = design.services[sr ? 1 : 0];
-  const inquiryUrl = picked?.inquiryUrl ?? `${sr ? "/" : "/en"}?design=${id}#contact`;
+  const inquiryUrl = picked?.inquiryUrl ?? `${sr ? "/upitnik" : "/en/brief"}?design=${id}`;
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
