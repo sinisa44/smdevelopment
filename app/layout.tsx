@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
+import { siteUrl, socialImage } from "@/lib/seo";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
-    default: "SMDev — Fullstack razvoj i web rešenja",
+    default: "SMDev | Izrada poslovnih sajtova i web aplikacija",
     template: "%s | SMDev",
   },
-  description:
-    "Brzi i pouzdani poslovni sajtovi i web aplikacije zasnovane na fullstack iskustvu.",
+  description: "Izrada poslovnih sajtova, web aplikacija i redizajn za firme kojima treba jasno, brzo i pouzdano online prisustvo. Pogledajte SMDev projekte i katalog dizajna.",
   keywords: [
     "fullstack developer",
     "izrada sajtova",
@@ -16,22 +18,28 @@ export const metadata: Metadata = {
     "redizajn sajta",
     "održavanje sajta",
   ],
-  alternates: { languages: { "sr-Latn": "/", en: "/en" } },
   openGraph: {
     type: "website",
-    title: "SMDev — Fullstack razvoj i web rešenja",
-    description: "Sajtovi i web aplikacije prilagođeni stvarnim potrebama poslovanja.",
+    siteName: "SMDev",
+    locale: "sr_RS",
+    title: "SMDev | Izrada poslovnih sajtova i web aplikacija",
+    description: "Poslovni sajtovi i web aplikacije prilagođeni stvarnim potrebama vašeg biznisa.",
+    url: siteUrl,
+    images: [socialImage("sr")],
   },
+  twitter: { card: "summary_large_image", images: [socialImage("sr").url] },
+  robots: { index: true, follow: true },
   icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = (await headers()).get("x-smdev-locale") === "en" ? "en" : "sr-Latn";
   return (
-    <html lang="sr-Latn" className="scroll-smooth">
+    <html lang={locale} className="scroll-smooth">
       <body>{children}</body>
     </html>
   );

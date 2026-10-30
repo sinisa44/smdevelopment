@@ -29,6 +29,12 @@ Copy `.env.example` to `.env.local` and put the Gmail App Password there only if
 
 Serbian (Latin) is the primary language at `/`, with the catalog at `/katalog`. English is at `/en`, with its catalog at `/en/catalog`. Selecting a design opens a short brief at `/upitnik` or `/en/brief` before the contact form. Previous `/sr` and `/catalog` links redirect to the new locations.
 
+## SEO
+
+The public pages have canonical URLs, reciprocal Serbian/English `hreflang`, distinct titles and descriptions, social sharing images, a sitemap at `/sitemap.xml`, and a robots file at `/robots.txt`. The real service page is `/izrada-sajtova` (`/en/business-websites` in English). Fictional demos and the brief are marked `noindex`; only the portfolio, service page and catalog in both languages appear in the sitemap.
+
+The canonical origin defaults to `https://smdevelopment-nine.vercel.app`. If a custom domain becomes the primary address, set `NEXT_PUBLIC_SITE_URL` to its HTTPS origin in Vercel, redirect the old domain to it, and redeploy. Then verify the domain in Google Search Console and submit `https://YOUR_DOMAIN/sitemap.xml`. Indexing and search placement depend on Google's crawl and assessment; the metadata alone does not guarantee rankings.
+
 ## Architecture
 
 - Next.js and TypeScript

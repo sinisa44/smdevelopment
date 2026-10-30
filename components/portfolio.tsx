@@ -141,6 +141,7 @@ export function Portfolio({ locale }: { locale: Locale }) {
               <span className="detail-index">0{activeService + 1}</span>
               <h3>{t.services[activeService].title}</h3>
               {(["problem", "receive", "useful"] as const).map((key) => <div className="detail-row" key={key}><b>{t.labels[key]}</b><p>{t.services[activeService][key]}</p></div>)}
+              {activeService === 0 && <a href={locale === "sr" ? "/izrada-sajtova" : "/en/business-websites"}>{locale === "sr" ? "Više o izradi poslovnih sajtova" : "More about business websites"}<ArrowUpRight /></a>}
               <a href="#contact">{t.discuss}<ArrowUpRight /></a>
             </article>
           </div>

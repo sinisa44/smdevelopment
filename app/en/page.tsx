@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
 import { Portfolio } from "@/components/portfolio";
+import { languageAlternates, siteUrl, socialImage } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "SMDev — Fullstack Developer & Web Solutions Partner",
-  description: "Fast, reliable business websites and custom web applications built with fullstack engineering expertise.",
-  alternates: { canonical: "/en", languages: { "sr-Latn": "/", en: "/en" } },
+  title: { absolute: "SMDev | Business Websites & Web Applications" },
+  description: "Business websites, custom web applications and redesigns for companies that need a clear, fast and reliable online presence. Explore SMDev work and website designs.",
+  alternates: { canonical: "/en", languages: languageAlternates("/", "/en") },
   openGraph: {
-    title: "SMDev — Fullstack Developer & Web Solutions Partner",
+    type: "website", siteName: "SMDev", locale: "en_GB", url: `${siteUrl}/en`,
+    title: "SMDev | Business Websites & Web Applications",
     description: "Websites and web applications shaped around practical business needs.",
+    images: [socialImage("en")],
   },
+  twitter: { card: "summary_large_image", images: [socialImage("en").url] },
 };
 
 export default function EnglishHome() {
