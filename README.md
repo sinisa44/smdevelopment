@@ -27,7 +27,7 @@ npm run dev:vercel
 
 Copy `.env.example` to `.env.local` and put the Gmail App Password there only if you want to test sending locally. `.env.local` is ignored by Git. The API route validates fields server-side, uses a honeypot and timing check, and includes the selected design and colors in the email. In-memory rate limiting is only per running instance, not a global spam-control service.
 
-English is available at `/`; Serbian is available at `/sr`.
+Serbian (Latin) is the primary language at `/`, with the catalog at `/katalog`. English is at `/en`, with its catalog at `/en/catalog`. Previous `/sr` and `/catalog` links redirect to the new locations.
 
 ## Architecture
 

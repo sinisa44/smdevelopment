@@ -7,7 +7,7 @@ import "./demo-contact.css";
 export type DemoId = "atelier" | "trpeza" | "majstor" | "ordinacija" | "bilans" | "izlog";
 const localDate = (date: Date) => `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
 
-function Calendar({ sr, id, value, onChange }: { sr: boolean; id: DemoId; value: string; onChange: (value: string) => void }) {
+export function Calendar({ sr, id, value, onChange }: { sr: boolean; id: string; value: string; onChange: (value: string) => void }) {
   const [month, setMonth] = useState(() => { const now = new Date(); return new Date(now.getFullYear(), now.getMonth(), 1); });
   const today = new Date();
   const todayKey = localDate(today);
@@ -26,7 +26,7 @@ function Calendar({ sr, id, value, onChange }: { sr: boolean; id: DemoId; value:
   })}</div><p className="dc-hint">{sr ? "Primer rasporeda • naredna 3 meseca. Zasivljeni dani nisu dostupni u demonstraciji." : "Sample schedule • next 3 months. Greyed-out days are unavailable in this demo."}</p></fieldset>;
 }
 
-function DemoMap({ sr }: { sr: boolean }) {
+export function DemoMap({ sr }: { sr: boolean }) {
   const map = "https://www.google.com/maps?q=Becej%2C%20Serbia&z=14&output=embed";
   return <section className="dc-location" aria-label={sr ? "Lokacija — primer" : "Sample location"}><div><small>{sr ? "KAKO DO NAS" : "FIND US"}</small><h3>{sr ? "Vidimo se u komšiluku." : "See you in the neighbourhood."}</h3><p>{sr ? "Bečej, Srbija — primer lokacije. Za vaš sajt postavljamo tačnu adresu vaše firme." : "Bečej, Serbia — sample location. Your website will show your business’s actual address."}</p><a href="https://www.google.com/maps/search/?api=1&query=Becej%2C%20Serbia" target="_blank" rel="noopener noreferrer">{sr ? "Otvori primer u Google mapama" : "Open sample in Google Maps"} ↗</a></div><div className="dc-map"><iframe title={sr ? "Google mapa Bečeja — demonstraciona lokacija" : "Google map of Bečej — sample location"} src={map} loading="eager" referrerPolicy="no-referrer-when-downgrade" allowFullScreen/></div></section>;
 }

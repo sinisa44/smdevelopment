@@ -14,6 +14,18 @@ const defaultColors: Record<string, Palette> = {
   ordinacija: { primary: "#194b4d", secondary: "#edf6f3", font: "#194b4d" },
   bilans: { primary: "#172d4c", secondary: "#e9edf0", font: "#172d4c" },
   izlog: { primary: "#3a334f", secondary: "#ecc6bd", font: "#3a334f" },
+  ogledalo: { primary: "#5b242c", secondary: "#e9d4cc", font: "#352227" },
+  miris: { primary: "#8f6f69", secondary: "#efe6dc", font: "#342b2c" },
+  jutro: { primary: "#e69b30", secondary: "#fff0c9", font: "#4b2c1c" },
+  slatko: { primary: "#d6516e", secondary: "#ffebef", font: "#4c1e32" },
+  uredno: { primary: "#2a716d", secondary: "#e4f1ec", font: "#1d3637" },
+  prostor: { primary: "#9c5747", secondary: "#e8e1d5", font: "#2c3030" },
+  osmeh: { primary: "#268899", secondary: "#e9f7f6", font: "#16444a" },
+  korak: { primary: "#655f91", secondary: "#e7e7f2", font: "#282843" },
+  kompas: { primary: "#1b3346", secondary: "#dbe9e0", font: "#1b3346" },
+  nacrt: { primary: "#7a5647", secondary: "#e8e0d4", font: "#292f2b" },
+  zeleno: { primary: "#487650", secondary: "#e1ecd3", font: "#233f2e" },
+  dar: { primary: "#a74e68", secondary: "#f3ddd7", font: "#492638" },
 };
 function foregroundFor(hex: string) {
   const channels = [1, 3, 5].map((start) => parseInt(hex.slice(start, start + 2), 16) / 255);
@@ -78,6 +90,18 @@ const extras: Record<string, [string[], string[]]> = {
   ordinacija: [["Usluge i tim", "Kalendar termina", "Priprema za posetu", "Mapa ordinacije"], ["Services and team", "Appointment calendar", "Visit preparation", "Practice map"]],
   bilans: [["Usluge i paketi", "Kalendar konsultacija", "Proces saradnje", "Kontakt upit"], ["Services and plans", "Consultation calendar", "Working process", "Contact inquiry"]],
   izlog: [["Katalog proizvoda", "Upit o dostupnosti", "Ideje za poklone", "Mapa radnje"], ["Product collection", "Availability inquiry", "Gift ideas", "Shop map"]],
+  ogledalo: [["Usluge i stilisti", "Galerija stila", "Primer zakazivanja", "Mapa salona"], ["Services and stylists", "Style gallery", "Booking preview", "Salon map"]],
+  miris: [["Rituali nege", "Poklon kartice", "Primer zakazivanja", "Mapa studija"], ["Care rituals", "Gift cards", "Booking preview", "Studio map"]],
+  jutro: [["Dnevna ponuda", "Meni i cene", "Kontakt upit", "Mapa lokala"], ["Daily counter", "Menu and prices", "Contact inquiry", "Café map"]],
+  slatko: [["Galerija kolača", "Torte po narudžbini", "Upit za datum", "Mapa radnje"], ["Cake gallery", "Custom orders", "Date inquiry", "Shop map"]],
+  uredno: [["Paketi čišćenja", "Proces rada", "Upit za ponudu", "Česta pitanja"], ["Cleaning plans", "How it works", "Quote inquiry", "FAQs"]],
+  prostor: [["Primeri prostora", "Faze projekta", "Upit za procenu", "Galerija radova"], ["Space examples", "Project phases", "Estimate inquiry", "Work gallery"]],
+  osmeh: [["Usluge ordinacije", "Prva poseta", "Primer zakazivanja", "Mapa ordinacije"], ["Practice services", "First visit", "Booking preview", "Practice map"]],
+  korak: [["Put oporavka", "Seanse", "Primer zakazivanja", "Mapa studija"], ["Recovery pathway", "Sessions", "Booking preview", "Studio map"]],
+  kompas: [["Oblasti savetovanja", "Proces saradnje", "Upit za konsultacije", "Česta pitanja"], ["Advisory areas", "Working process", "Consultation inquiry", "FAQs"]],
+  nacrt: [["Portfolio koncepata", "Proces projektovanja", "Upit za projekat", "Galerija"], ["Concept portfolio", "Design process", "Project inquiry", "Gallery"]],
+  zeleno: [["Kolekcija biljaka", "Saveti za negu", "Upit o dostupnosti", "Mapa radnje"], ["Plant collection", "Care advice", "Availability inquiry", "Shop map"]],
+  dar: [["Poklon kolekcije", "Lični detalji", "Upit za preuzimanje", "Mapa radnje"], ["Gift collections", "Personal touches", "Pickup inquiry", "Shop map"]],
 };
 
 export function DemoIncluded({ id, locale }: { id: string; locale: Locale }) {

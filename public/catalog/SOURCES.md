@@ -15,3 +15,7 @@ Illustrative photographs downloaded from Unsplash image CDN. These are visual re
 | plants.jpg | https://images.unsplash.com/photo-1416879595882-3373a0480b5b |
 | greenery.jpg | https://images.unsplash.com/photo-1459411552884-841db9b3cc2a |
 | mug.jpg | https://images.unsplash.com/photo-1514228742587-6b1558fcca3d |
+| bakery-display.jpg | https://unsplash.com/photos/croissants-on-display-TG77ANwm3MQ |
+| croissant.jpg | https://unsplash.com/photos/a-couple-of-croissants-sitting-on-top-of-a-white-counter-lB8t-vLGC2Q |
+| cake.jpg | https://unsplash.com/photos/sliced-cake-on-cake-riser-oudLkxglHuM |
+| cake-table.jpg | https://unsplash.com/photos/several-slices-of-delicious-cake-on-a-table-IGTpXivFCIo |

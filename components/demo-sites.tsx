@@ -3,6 +3,7 @@ import type { Locale } from "@/lib/content";
 import "./demo-sites.css";
 import { DemoContact, type DemoId } from "./demo-contact";
 import { DemoIncluded, useDemoPersonalization } from "./demo-personalization";
+import { ExpansionDemo } from "./demo-expansion";
 
 type Props = { locale: Locale };
 const photo = (name: string) => `/catalog/${name}.jpg`;
@@ -61,4 +62,4 @@ function Izlog({locale}:Props) {
 }
 
 const demoSites = { atelier: Atelier, trpeza: Trpeza, majstor: Majstor, ordinacija: Ordinacija, bilans: Bilans, izlog: Izlog };
-export function DemoSite({id,locale}:{id:string;locale:Locale}) { const Site = demoSites[id as keyof typeof demoSites]; return Site ? <Site locale={locale}/> : null; }
+export function DemoSite({id,locale}:{id:string;locale:Locale}) { const Site = demoSites[id as keyof typeof demoSites]; return Site ? <Site locale={locale}/> : <ExpansionDemo id={id} locale={locale}/>; }
